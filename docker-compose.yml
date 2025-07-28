@@ -1,0 +1,27 @@
+# docker-compose.yml
+# version: '3.8' # Устарело, убираем
+
+services:
+  db:
+    image: postgres:14
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASS}
+    volumes:
+      - pg:/var/lib/postgresql/data
+    # ports:
+    #   - "5432:5432" # Только для разработки, уберите в продакшене
+
+  bot:
+    build: .
+    restart: unless-stopped
+    env_file: .env
+    depends_on:
+      - db
+    ports:
+      - "5000:5000" # Для вебхука FunPay
+
+volumes:
+  pg: # <-- ИСПРАВЛЕНО: volumes как mapping (ключ: значение)
